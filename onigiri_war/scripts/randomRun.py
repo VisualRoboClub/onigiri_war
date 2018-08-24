@@ -10,77 +10,80 @@ from geometry_msgs.msg import Twist
 #import cv2
 
 
-
 class RandomBot():
+
     def __init__(self, bot_name):
         # bot name 
         self.name = bot_name
         # velocity publisher
         self.vel_pub = rospy.Publisher('cmd_vel', Twist,queue_size=1)
 
+
+
+
+
+
     def strategy(self):
 
-        i = 0
-
-        r = rospy.Rate(10) # change speed 1fps
-
-        target_speed = 0
-        target_turn = 0
-        control_speed = 0
-        control_turn = 0
 
         PI = 3.14159265358979
-        
-        while not rospy.is_shutdown():
+        FPS = 10
 
-            # twist = self.calcTwist()
+        #speed: -0.5~0.5
+        #angle: -180~180
+        #time : second
+        def RunCalc(speed, angle, time):
+            
+            cnt = 0
+            r = rospy.Rate(FPS) # change speed
+            time = time * FPS   # dhange to second
+
             twist = Twist()
-            # twist.linear.x = 0
-            # twist.angular.z= 0
 
+            twist.linear.x = speed
+            twist.angular.z = PI * angle / 180
 
-            if 10 <= i and i < 40:
-                twist.linear.x = 0.4
-                twist.angular.z = 0
-            elif 50 <= i and i < 60:
-                twist.linear.x = 0
-                twist.angular.z = PI/4
-            elif 70 <= i and i < 95:
-                twist.angular.z = 0  
-                twist.linear.x = 0.47
-            elif 105 <= i and i < 125:
-                twist.linear.x = 0
-                twist.angular.z = -(PI/4) 
-            elif 135 <= i and i < 147:
-                twist.linear.x = 1.0
-                twist.angular.z = 0 
-            elif 185 <= i and i < 213:
-                twist.linear.x = 1.0
-                twist.angular.z = 0 
-            elif 220 <= i and i < 230:
-                twist.linear.x = 0
-                twist.angular.z = (PI/2) 
-            elif 240 <= i and i < 255:
-                twist.linear.x = 1
-                twist.angular.z = 0
-            elif 265 <= i and i < 275:
-                twist.linear.x = 0
-                twist.angular.z = (PI*3/4) 
-            elif 280 <= i and i < 283:
-                twist.linear.x = 1
-                twist.angular.z = 0
-
-            else:
-                twist.linear.x = 0
-                twist.angular.z = 0
-
-            print(twist)
             self.vel_pub.publish(twist)
 
-            i = i + 1
+            while cnt < time:
 
-            r.sleep()
- 
+                print(twist)
+
+                cnt = cnt + 1
+                r.sleep()
+
+
+
+        RunCalc(0, 0, 1)        #Sleep
+        
+        RunCalc(0.5, 90, 1)
+        RunCalc(0.5, 0, 1.2)    #1point
+        RunCalc(0, -130, 1)
+
+        RunCalc(0.5, 0, 2.5)
+        RunCalc(0, 90, 2)       #2point
+
+        RunCalc(0.5, -90, 1.8)
+        RunCalc(0.5, 0, 0.5)    #3point
+        RunCalc(0, 90, 1)
+        RunCalc(0.5, -80, 1.3)
+
+        RunCalc(0.1, 100, 1)    #4point
+
+        RunCalc(-0.2, 180, 1)
+        RunCalc(0, 135, 0.5)
+        
+        RunCalc(0.5, 0, 0.3)  
+        RunCalc(0.2, -135, 1)   #5point
+
+        RunCalc(-0.4, 100, 1.2)
+        RunCalc(0.5, 0, 1.1)    #6point
+
+        RunCalc(-0.3, -45, 2)   #EndRun
+        RunCalc(-0.5, 0, 2)     #EndRun
+
+        RunCalc(0, 0, 1)        #Sleep
+       
 
 if __name__ == '__main__':
     rospy.init_node('random_rulo')
